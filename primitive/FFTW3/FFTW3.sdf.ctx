@@ -1,0 +1,45 @@
+;*******************************************************************************
+;* 							Context of Primitive FFTW3
+;* *****************************************************************************
+;* 	Filename:		FFTW3.sdf.ctx
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	
+;*
+;******************************************************************************/
+
+
+primitive	FFTW3
+	context
+		input		float[2048]		inp_i[1]
+		input		float[2048]		inp_q[1]
+		output		float[2048]		out_i[1]
+		output		float[2048]		out_q[1]
+		parameter	int				log2point
+		parameter	int				inverse
+	end
+end
+
+

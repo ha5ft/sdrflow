@@ -1,0 +1,59 @@
+;*******************************************************************************
+;*							Composite A4
+;*******************************************************************************
+;* 	Filename:		A4.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+
+use A5
+use	A6
+composite	A4
+	context
+		input	float[1]	i1[]
+		output	float[5]	o1[]
+	end
+	signals
+		stream	int[1]	s1[]
+	end
+	actors
+		primitive	A5	a1
+		primitive	A6	a2
+	end
+	topology
+		a1.i1 << i1
+		a1.o1 >> s1
+		a2.i1 << s1
+		a2.o1 >> o1
+	end
+	schedule
+		auto a1
+	end
+end
+
+

@@ -1,0 +1,111 @@
+;*******************************************************************************
+;*							Composite CwRx
+;*******************************************************************************
+;* 	Filename:		CwRx.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+use	Mixer
+; the next line should be enabled for normal run and commented out for benchmark
+use	AudioSink
+; the next line should be enabled for benchmark and commented out for normal run
+;use MiniBlackhole
+use	Negate
+use	Filter
+; Next line for test purposes only
+;use Printer
+
+composite	CwRx
+	context
+		input		float[1024]	inp_re[]
+		input		float[1024]	inp_im[]
+		parameter	float		freq
+		parameter	float		beatfreq
+		parameter	float		bandwidth
+	end
+	signals
+		stream		float[1024]	baseband_re[]
+		stream		float[1024]	baseband_im[]
+		stream		float[1024]	filtered_re[]
+		stream		float[1024]	filtered_im[]
+		stream		float[1024]	audio_re[]
+		stream		float[1024]	audio_im[]
+		var			float		rxfreq
+		const		float		gain	0.5
+		const		float		beatgain	0.5
+
+	end
+	actors
+		composite	Mixer		basebandmix
+		composite	Filter		filter
+		composite	Mixer		beatmix
+; the next line should be enabled for normal run and commented out for benchmark
+		primitive	AudioSink	audiocard
+; the next line should be enabled for benchmark and commented out for normal run
+;		primitive	MiniBlackhole	audiocard
+		primitive	Negate		negate
+; Next line for testing
+;		primitive	Printer		prn
+	end
+	topology
+		basebandmix.inp_re		<<		inp_re
+		basebandmix.inp_im		<<		inp_im
+		basebandmix.out_re		>>		baseband_re
+		basebandmix.out_im		>>		baseband_im
+; next two line for testing only
+;		prn.inp_re				<<		baseband_re
+;		prn.inp_im				<<		baseband_im
+		basebandmix.freq		<<		rxfreq
+		basebandmix.gain		<<		gain
+		filter.inp_re			<<		baseband_re
+		filter.inp_im			<<		baseband_im
+		filter.bandwidth		<<		bandwidth
+		filter.out_re			>>		filtered_re
+		filter.out_im			>>		filtered_im
+; next two line for testing only
+;		prn.inp_re				<<		filtered_re
+;		prn.inp_im				<<		filtered_im
+		beatmix.inp_re			<<		filtered_re
+		beatmix.inp_im			<<		filtered_im
+		beatmix.out_re			>>		audio_re
+		beatmix.out_im			>>		audio_im
+		beatmix.freq			<<		beatfreq
+		beatmix.gain			<<		beatgain
+		audiocard.inp_re		<<		audio_re
+		audiocard.inp_im		<<		audio_im
+		negate.inp				<<		freq
+		negate.out				>>		rxfreq
+	end
+	schedule
+		auto	negate
+		auto	basebandmix
+	end
+end
+
+		
+		

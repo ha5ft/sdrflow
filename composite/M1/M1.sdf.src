@@ -1,0 +1,106 @@
+;*******************************************************************************
+;*							Composite M1
+;*******************************************************************************
+;* 	Filename:		M1.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+
+use	A1
+use	A2
+use	A3
+use	A4
+use	A7
+use	A8
+use	A9
+composite	M1
+	context
+		input		float[5]	i1[]
+		output		float[5]	o1[]
+		parameter	int[1]		p1[2]
+		parameter	int[5]		p2[1]
+	end
+	signals
+		stream	float[1]	s1[]
+		stream	float[1]	s2[]
+		stream	float[1]	s3[]
+		var		int[3]		v1[1]
+		var		float[1]	v2[1]
+		var		int[1]		v3[6]
+	end
+	actors
+		primitive	A1	a1
+		primitive	A2	a2
+		primitive	A3	a3
+		composite	A4	a4
+		primitive	A7	a7
+		primitive	A8	a8
+		primitive	A9	a9
+	end
+	topology
+		a1.i1	<<	i1
+		a1.o1	>>	s1
+		a1.p1	<<	p2
+		a2.i1	<<	s1
+		a2.i2	<<	v3
+		a2.o1	>>	s2
+		a3.i1	<<	s2
+		a3.i2	<<	v2
+		a3.o1	>>	s3
+		a4.i1	<<	s3
+		a4.o1	>>	o1
+		a7.i1	<<	p1
+		a7.o1	>>	v1
+		a8.i1	<<	v1
+		a8.o1	>>	v2
+		a9.i1	<<	v1
+		a9.o1	>>	v3
+	end
+	schedule
+;		manual	a1
+;			do	6
+;			a1
+;			loop
+;			do	5
+;			a2
+;			a3
+;			loop
+;			do	6
+;			a4
+;			loop
+;		end
+;		manual	a7
+;			a7
+;			a8
+;			a9
+;		end
+		auto	a7
+		auto	a1
+	end
+end
+

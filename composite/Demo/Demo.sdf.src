@@ -1,0 +1,85 @@
+;*******************************************************************************
+;*							Composite Demo
+;*******************************************************************************
+;* 	Filename:		Demo.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+
+use	CwTx
+use	Channel
+use	CwRx
+
+composite	Demo
+	context
+	end
+	signals
+		stream	float[1024]		txout_re[]
+		stream	float[1024]		txout_im[]
+		stream	float[1024]		rxinp_re[]
+		stream	float[1024]		rxinp_im[]
+		const	float			txfreq			8000.0
+		const	float			txgain			1.0
+		const	float			ifreq			8800.0
+		const	float			igain			1.0
+		const	float			rxfreq			8000.0
+		const	float			beatfreq		800.0
+		const	float			rxbw			200.0
+		const	char[32]		txtext			"cq de ha5ft "
+		const	char[32]		itext			"cq de ha5khe "
+	end
+	actors
+		composite	CwTx		tx
+		composite	Channel		ch
+		composite	CwRx		rx
+	end
+	topology
+		tx.out_re		>>	txout_re
+		tx.out_im		>>	txout_im
+		tx.text			<<	txtext
+		tx.freq			<<	txfreq
+		tx.gain			<<	txgain
+		ch.inp_re		<<	txout_re
+		ch.inp_im		<<	txout_im
+		ch.out_re		>>	rxinp_re
+		ch.out_im		>>	rxinp_im
+		ch.freq			<<	ifreq
+		ch.gain			<<	igain
+		ch.text			<<	itext
+		rx.inp_re		<<	rxinp_re
+		rx.inp_im		<<	rxinp_im
+		rx.freq			<<	rxfreq
+		rx.beatfreq		<<	beatfreq
+		rx.bandwidth	<<	rxbw
+	end
+	schedule
+		auto	tx
+	end
+end
+
+

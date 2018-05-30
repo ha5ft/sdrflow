@@ -1,0 +1,111 @@
+;*******************************************************************************
+;*							Composite OverlapSave
+;*******************************************************************************
+;* 	Filename:		OverlapSave.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+use	Overlapper
+use	VFFT
+;use	FFTW3
+use	MultiplierExt
+use	Discarder
+;use	Blackhole
+;use	Printer2
+
+composite	OverlapSave
+	context
+		input		float[1024]		inp_re[]
+		input		float[1024]		inp_im[]
+		input		float[2048]		freqresp_re[]
+		input		float[2048]		freqresp_im[]
+		output		float[1024]		out_re[]
+		output		float[1024]		out_im[]
+	end
+	signals
+		stream		float[2048]		overlapped_re[]
+		stream		float[2048]		overlapped_im[]
+		stream		float[2048]		spectrum_re[]
+		stream		float[2048]		spectrum_im[]
+		stream		float[2048]		filtspectrum_re[]
+		stream		float[2048]		filtspectrum_im[]
+		stream		float[2048]		ifftout_re[]
+		stream		float[2048]		ifftout_im[]
+		const		int				log2size		11
+		const		int				forward			0
+		const		int				inverse			1
+	end
+	actors
+		primitive	Overlapper		overlapper
+		primitive	VFFT			fft
+;		primitive	FFTW3			fft
+		primitive	MultiplierExt	mult
+		primitive	VFFT			ifft
+;		primitive	FFTW3			ifft
+		primitive	Discarder		discarder
+;		primitive	Blackhole		hole
+;		primitive	Printer2		prn
+	end
+	topology
+		overlapper.inp_re	<<		inp_re
+		overlapper.inp_im	<<		inp_im
+		overlapper.out_re	>>		overlapped_re
+		overlapper.out_im	>>		overlapped_im
+		fft.inp_i			<<		overlapped_re
+		fft.inp_q			<<		overlapped_im
+		fft.log2point		<<		log2size
+		fft.inverse			<<		forward
+		fft.out_i			>>		spectrum_re
+		fft.out_q			>>		spectrum_im
+		mult.a_re			<<		freqresp_re
+		mult.a_im			<<		freqresp_im
+		mult.b_re			<<		spectrum_re
+		mult.b_im			<<		spectrum_im
+		mult.axb_re			>>		filtspectrum_re
+		mult.axb_im			>>		filtspectrum_im
+		ifft.inp_i			<<		filtspectrum_re
+		ifft.inp_q			<<		filtspectrum_im
+		ifft.log2point		<<		log2size
+		ifft.inverse		<<		inverse
+		ifft.out_i			>>		ifftout_re
+		ifft.out_q			>>		ifftout_im
+		discarder.inp_re	<<		ifftout_re
+		discarder.inp_im	<<		ifftout_im
+		discarder.out_re	>>		out_re
+		discarder.out_im	>>		out_im
+;		prn.inp_re			<<		ifftout_re
+;		prn.inp_im			<<		ifftout_im
+;		hole.inp_re			<<		filtspectrum_re
+;		hole.inp_im			<<		filtspectrum_im
+	end
+	schedule
+;		auto		prn
+		auto		overlapper
+	end
+end
+

@@ -1,0 +1,67 @@
+;*******************************************************************************
+;*							Composite CwTx
+;*******************************************************************************
+;* 	Filename:		CwTx.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+use	CwGen
+use	Mixer
+
+composite	CwTx
+	context
+		output		float[1024]	out_re[]
+		output		float[1024]	out_im[]
+		parameter	char[32]	text
+		parameter	float		freq
+		parameter	float		gain
+	end
+	signals
+		stream		float[1024]	baseband_re[]
+		stream		float[1024]	baseband_im[]
+	end
+	actors
+		primitive	CwGen		cwgen
+		composite	Mixer		mixer
+	end
+	topology
+		cwgen.out_re	>>	baseband_re
+		cwgen.out_im	>>	baseband_im
+		cwgen.text		<<	text
+		mixer.inp_re	<<	baseband_re
+		mixer.inp_im	<<	baseband_im
+		mixer.out_re	>>	out_re
+		mixer.out_im	>>	out_im
+		mixer.freq		<<	freq
+		mixer.gain		<<	gain
+	end
+	schedule
+		auto	cwgen
+	end
+end
+

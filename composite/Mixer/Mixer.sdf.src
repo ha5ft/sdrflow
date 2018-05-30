@@ -1,0 +1,69 @@
+;*******************************************************************************
+;*							Composite Mixer
+;*******************************************************************************
+;* 	Filename:		Mixer.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+use		SignalGen
+use		Multiplier
+
+composite	Mixer
+	context
+		input		float[1024]		inp_re[]
+		input		float[1024]		inp_im[]
+		output		float[1024]		out_re[]
+		output		float[1024]		out_im[]
+		parameter	float			freq
+		parameter	float			gain
+	end
+	signals
+		stream		float[1024]		carrier_re
+		stream		float[1024]		carrier_im
+	end
+	actors
+		primitive	SignalGen		localosc
+		primitive	Multiplier		mult
+	end
+	topology
+		localosc.out_re		>>		carrier_re
+		localosc.out_im		>>		carrier_im
+		localosc.freq		<<		freq
+		localosc.gain		<<		gain
+		mult.a_re			<<		inp_re
+		mult.a_im			<<		inp_im
+		mult.b_re			<<		carrier_re
+		mult.b_im			<<		carrier_im
+		mult.axb_re			>>		out_re
+		mult.axb_im			>>		out_im
+	end
+	schedule
+		auto		localosc
+	end
+end
+

@@ -1,0 +1,64 @@
+;*******************************************************************************
+;*							Composite M1
+;*******************************************************************************
+;* 	Filename:		M1.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+
+use	M1
+use	A10
+use	A11
+
+composite	M2
+	context
+	end
+	signals
+		stream		float[5]	s1
+		stream		float[5]	s2
+		const		int[1]		c1[2]	1 2
+		const		int[5]		c2[1]	1 2 3 4 5
+	end
+	actors
+		primitive	A10	a1
+		composite	M1	a2
+		primitive	A11	a3
+	end
+	topology
+		a1.o1	>>	s1
+		a2.i1	<<	s1
+		a2.o1	>>	s2
+		a2.p1	<<	c1
+		a2.p2	<<	c2
+		a3.i1	<<	s2
+	end
+	schedule
+		auto	a1
+	end
+end
+

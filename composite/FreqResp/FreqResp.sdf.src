@@ -1,0 +1,89 @@
+;*******************************************************************************
+;*							Composite FreqResp
+;*******************************************************************************
+;* 	Filename:		FreqResp.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+use		Impulse
+use		Window
+use		MultiplierExt
+use		VFFT
+;use		FFTW3
+;use		Printer2
+
+composite	FreqResp
+	context
+		output		float[2048]		out_re[]
+		output		float[2048]		out_im[]
+		parameter	float			bandwidth
+	end
+	signals
+		stream		float[2048]		impulse_re[]
+		stream		float[2048]		impulse_im[]
+		stream		float[2048]		window_re[]
+		stream		float[2048]		window_im[]
+		stream		float[2048]		windowedimp_re[]
+		stream		float[2048]		windowedimp_im[]
+		const		int				inverse		0
+		const		int				log2size	11
+	end
+	actors
+		primitive	Impulse			impgen
+		primitive	Window			wingen
+		primitive	MultiplierExt	mult
+		primitive	VFFT			fft
+;		primitive	FFTW3			fft
+;		primitive	Printer2		prn
+	end
+	topology
+		impgen.out_re		>>	impulse_re
+		impgen.out_im		>>	impulse_im
+		impgen.bandwidth	<<	bandwidth
+		wingen.out_re		>>	window_re
+		wingen.out_im		>>	window_im
+		mult.a_re			<<	impulse_re
+		mult.a_im			<<	impulse_im
+		mult.b_re			<<	window_re
+		mult.b_im			<<	window_im
+		mult.axb_re			>>	windowedimp_re
+		mult.axb_im			>>	windowedimp_im
+		fft.inp_i			<<	windowedimp_re
+		fft.inp_q			<<	windowedimp_im
+		fft.log2point		<<	log2size
+		fft.inverse			<<	inverse
+		fft.out_i			>>	out_re
+		fft.out_q			>>	out_im
+;		prn.inp_re			<<	windowedimp_re
+;		prn.inp_im			<<	windowedimp_im
+	end
+	schedule
+		auto		impgen
+	end
+end
+

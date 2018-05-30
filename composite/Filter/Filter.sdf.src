@@ -1,0 +1,67 @@
+;*******************************************************************************
+;*							Composite Filter
+;*******************************************************************************
+;* 	Filename:		OverlapSave.sdf.src
+;* 	Platform:		ubuntu 16.04 64 bit
+;* 	Author:			Copyright (C) Selmeczi János, original version
+;*******************************************************************************
+;*							Licensing
+;*******************************************************************************
+;*  This file is part of sdrflow.
+;*
+;*  Sdrflow is free software: you can redistribute it and/or modify
+;*  it under the terms of the GNU General Public License as published by
+;*  the Free Software Foundation, either version 3 of the License, or
+;*  (at your option) any later version.
+;*
+;*  Sdrflow is distributed in the hope that it will be useful,
+;*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;*  GNU General Public License for more details.
+;*
+;*  You should have received a copy of the GNU General Public License
+;*  along with sdrflow.  If not, see <http://www.gnu.org/licenses/>.
+;*******************************************************************************
+;*							Revision history
+;*******************************************************************************
+;*	Author				Date		Comment
+;*******************************************************************************
+;*	Selmeczi János		23-04-2018	original version
+;*
+;******************************************************************************/
+
+use		FreqResp
+use		OverlapSave
+
+composite Filter
+	context
+		input		float[1024]		inp_re[]
+		input		float[1024]		inp_im[]
+		output		float[1024]		out_re[]
+		output		float[1024]		out_im[]
+		parameter	float			bandwidth
+	end
+	signals
+		stream		float[2048]		fresp_re
+		stream		float[2048]		fresp_im
+	end
+	actors
+		composite	FreqResp		frespgen
+		composite	OverlapSave		overlapsave
+	end
+	topology
+		frespgen.bandwidth		<<	bandwidth
+		frespgen.out_re			>>	fresp_re
+		frespgen.out_im			>>	fresp_im
+		overlapsave.inp_re		<<	inp_re
+		overlapsave.inp_im		<<	inp_im
+		overlapsave.freqresp_re	<<	fresp_re
+		overlapsave.freqresp_im	<<	fresp_im
+		overlapsave.out_re		>>	out_re
+		overlapsave.out_im		>>	out_im
+	end
+	schedule
+		auto	overlapsave
+	end
+end
+
