@@ -2,7 +2,7 @@
 **The author:** ***Dr.Janos Selmeczi, HA5FT***. You could reach me at <ha5ft.jani@freemail.hu>
 ***
 # Trying the M2 dataflow
-This dataflow demonstrate the schedulink capabilities of the sdrflow framework. This dataflow has a nonrivial schedule. Its primitives keep track how many times they interface functions have been invoked. They interface functions print a message to the console, that the function has been invoked.
+This dataflow demonstrate the scheduling capabilities of the sdrflow framework. This dataflow has a nontrivial schedule. Its primitives keep track how many times the interface functions have been invoked. The interface functions print a message to the console, that the function has been invoked.
 ## Block diagram of the dataflow
 This is a hierarchical dataflow. The next diagrams show its components.
 
