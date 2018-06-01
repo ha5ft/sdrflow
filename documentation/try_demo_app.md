@@ -3,19 +3,19 @@
 ***
 ## Trying the Demo dataflow
 This is a signal processing dataflow. It implements:
-- a CW transmitter which continuosly transmits a given text,
-- a CW receiver, which filters a part of the spectrum, demodulate the CW signal in it and puts the demodulated signal to the sound card,
-- a Channel which connect the transmitter and the reaceiver and add an interfering CW signal.
+- a CW transmitter which continuously transmits a given text,
+- a CW receiver, which filters a part of the spectrum, demodulates the CW signal in it and puts the demodulated signal to the sound card,
+- a Channel which connects the transmitter and the reaceiver and adds an interfering CW signal.
 
 The data flow uses the (-24000Hz,+24000Hz) frequency range and uses 48000 sample/sec sampling rate.
-A more detailed description with block diagrams you could find in my [Fredrichshafen SDR Academy 2018 presentation](Friedrichshafen2018/Building_sdr_application_with_sdrflow.pdf).
+You can find a more detailed description with block diagrams in my [Fredrichshafen SDR Academy 2018 presentation](Friedrichshafen2018/Building_sdr_application_with_sdrflow.pdf).
 
 ## Prerequisites
-Your computers soung system should work.
-You should have spekers or headphone connected to your computer.
+Your computers sound system should work.
+You should have speakers or headphone connected to your computer.
 The proper working of the dataflow could be checked by hearing its audio output.
 ## Your first experiment with Demo
-The Demo data flow has a command line interface through the sdrflow framework runrime application. So you shoud run it from a ***command terminal in the sdfrflow directory***.
+The Demo data flow has a command line interface through the sdrflow framework runtime application. So you shoud run it from a ***command terminal in the sdfrflow directory***.
 ```bash
 # start the sdrflow runtime_application
 > ./bin/sdfrun
@@ -30,7 +30,7 @@ sdrflow>start /demo
 OK
 sdrflow>
 # Now you should here  the "cq de ha5ft " CW transmission.
-# You could change the receivin frequency.
+# You could change the receiving frequency.
 sdrflow>fset /demo/rxfreq 8800.0
 OK
 sdrflow>
@@ -46,7 +46,7 @@ sdrflow>fset /demo/rxbw 1000.0
 OK
 sdrflow>
 # Now you could hear both of the CW transmission
-# You could chane one of the transmitted text
+# You could change one of the transmitted text
 sdrflow>sset /demo/txtext "ha5ft de ha7ilm pse k "
 OK
 sdrflow>
@@ -60,7 +60,7 @@ sdrflow>exit
 >
 ```
 ## Changable parameters and it's defaul values
-The Demo data flow has several changable parameters. The parameter's name include the instance name of the data flow which has benn given by you in the ***load*** command. In the following description I suppose that the instance name is ***demo***.
+The Demo data flow has several changeable parameters. The parameter's name includes the instance name of the data flow which has been given by you in the ***load*** command. In the following description I suppose that the instance name is ***demo***.
 
 Parameter's path name | Default value | Value type | Meaning
 --- | --- | --- | ---
@@ -77,3 +77,7 @@ Parameter's path name | Default value | Value type | Meaning
 /demo/rx/beatgain | 0.5 | fixed point | receiver beat mixer gain
 
 You could ***set*** and ***get*** the ***fixed point*** parameters by the ***fset*** and ***fget*** commands. The ***string*** parameters could be ***set*** and ***get*** with the ***sset*** and ***sget*** commands. You could read more about the commands of the runtime application in the [Get familiar with the runtime application](documentation/runtime_application.md) document.
+
+----
+
+Next: [Trying the M2 dataflow](try_m2_app.md)
