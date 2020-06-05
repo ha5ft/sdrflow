@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 					.build_dir = "./"
 				};
 
-	fprintf(stderr,"SDF Assambler version 0.1\n");
+	fprintf(stderr,"SDF Assembler version 0.1\n");
 
 //
 // ********************* Initializaton ****************************************
