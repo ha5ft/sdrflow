@@ -27,7 +27,7 @@ you will get the framework in the ***sdrflow*** directory in your working direct
 
 ### Compile the framework
 
-Before you could start experimenting with the framewor you should compile it. The framework comes with a ***build system*** based on ***make***. The build system will build the framework's executabels and all the primitives and composites which come with the framework. To build the framework you should do the following:
+Before you could start experimenting with the framework you should compile it. The framework comes with a ***build system*** based on ***make***. The build system will build the framework's executabels and all the primitives and composites which come with the framework. To build the framework you should do the following:
 
 ```bash
 # go to the sdrflow directory

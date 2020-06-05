@@ -1,0 +1,6 @@
+# Ignore compiled files that are not in the repo
+actor/
+bin/
+build/
+context/
+syslib/
