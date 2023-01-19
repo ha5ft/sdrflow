@@ -43,7 +43,7 @@
 #include <termios.h>
 #include <sys/signal.h>
 #include <sys/select.h>
-#include <stropts.h>
+// #include <stropts.h>
 #include <sys/ioctl.h>
 
 #include "command.h"
