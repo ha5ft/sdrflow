@@ -1,7 +1,7 @@
 #*******************************************************************************
-#* 							Makefile for building composites
+#* 							Makefile for sdrflow
 #* *****************************************************************************
-#* 	Filename:		composite.build.mk
+#* 	Filename:		makefile
 #* 	Platform:		ubuntu 16.04 64 bit
 #* 	Author:			Copyright (C) Selmeczi János, original version
 #*******************************************************************************
@@ -30,37 +30,34 @@
 #*
 #******************************************************************************/
 
+CFLAGS  = -Wall -Ofast -funroll-all-loops -march=native
+CFLAGS += -fPIC -DSDF_PLATFORM=0
+LDFLAGS = -shared -s
+LDFLAGS+= -lm -lpulse -lpulse-simple -lfftw3
+DIRECTORIES = `find * -type d`
 
-CP=cp
-RM=rm -f
-AR=ar
-LINK=gcc
-ifdef _BENCHMARK_
-MAKE=make _BENCHMARK_=1
-CC=gcc -D_BENCHMARK_
-else
-MAKE=make
-CC=gcc
-endif
-SDFSRC=../../bin/sdfsrc
-SDFASM=../../bin/sdfasm
+all:
+	@echo CFLAGS: $(CFLAGS)
+	@for subdir in $(DIRECTORIES); do \
+	    cd $$subdir; \
+	    echo -- $$subdir --; \
+	    $(CC) $${subdir}.c $(CFLAGS) $(LDFLAGS) -o $${subdir}.sdf.so; \
+	    cd ../$$subdir/..; \
+	done
 
-ACTORDIR=../../actor
-CONTEXTDIR=../../context
-BUILDROOT=../../build
+clean:
+	@for subdir in $(DIRECTORIES); do \
+	    cd $$subdir; \
+	    echo -- $$subdir --; \
+	    rm -f $$subdir.sdf.so; \
+	    cd ../$$subdir/..; \
+	done
 
-%.actor: $(ACTORDIR)/%.sdf.bin
+install:
+	for subdir in $(DIRECTORIES); do \
+	    cp -p $$subdir/$$subdir.sdf.so ../$(ACTOR_DIR); \
+	    cp -p $$subdir/$$subdir.sdf.ctx ../$(CONTEXT_DIR); \
+	done
 
-%.context: $(CONTEXTDIR)/%.sdf.ctx
-
-$(ACTORDIR)/%.sdf.bin: %.sdf.src $(DEPS)
-	@${RM} ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/*
-	@${SDFSRC} -C ${CONTEXTDIR}/ -B ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/ -i $(basename $(basename $(notdir $@)))
-	@${SDFASM} -B ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/ -I ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/ -i $(basename $(basename $(notdir $@)))
-	@${CP} ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/$(basename $(basename $(notdir $@))).sdf.bin ${ACTORDIR}
-	@${CP} ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/$(basename $(basename $(notdir $@))).sdf.ctx ${CONTEXTDIR}
-
-${CONTEXTDIR}/%.sdf.ctx:
-	@${CP} ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/$(basename $(basename $(notdir $@))).sdf.ctx ${CONTEXTDIR}
-
-
+uninstall:
+	@for subdir in $(DIRECTORIES); do rm -f ../$(ACTOR_DIR)/$$subdir.sdf.so ../$(CONTEXT_DIR)/$$subdir.sdf.ctx; done

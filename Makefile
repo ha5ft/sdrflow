@@ -1,9 +1,9 @@
 #*******************************************************************************
 #* 							Makefile for sdrflow
 #* *****************************************************************************
-#* 	Filename:		makefile
+#* 	Filename:		Makefile
 #* 	Platform:		ubuntu 16.04 64 bit
-#* 	Author:			Copyright (C) Selmeczi János, original version
+#* 	Author:			Copyright (C) Krüpl Zsolt & Selmeczi János, original version
 #*******************************************************************************
 #*							Licensing
 #*******************************************************************************
@@ -27,169 +27,47 @@
 #*	Author				Date		Comment
 #*******************************************************************************
 #*	Selmeczi János		23-04-2018	Original version
+#*      Krüpl Zsolt		23-01-2023	Rewriting, cleaning
 #*
 #******************************************************************************/
 
-CP=cp
-RM=rm -f
-AR=ar
-LINK=gcc
-ifdef _BENCHMARK_
-MAKE=make _BENCHMARK_=1
-CC=gcc -D_BENCHMARK_
-else
-MAKE=make --no-print-directory
-CC=gcc
-endif
+export CC = gcc
+export CFLAGS = -Wall -O2
+export SDRFLOW_LIB = ../libsdrflow.a
 
+SYSTEM_MODULES = common sdfasm sdfsrc sdfrun
 
-BINDIR=./bin
-LIBDIR=./lib
-ACTORDIR=./actor
-CONTEXTDIR=./context
-COMPOSITEROOT=./composite
-PRIMITIVEROOT=./primitive
-SYSLIBDIR=./syslib
-COMMONDIR=./system/common
-SDFASMDIR=./system/sdfasm
-SDFSRCDIR=./system/sdfsrc
-SDFRUNDIR=./system/sdfrun
-BUILDROOTDIR=./build
+export BIN_DIR = bin
+export ACTOR_DIR = actor
+export CONTEXT_DIR = context
 
-# Targets to be passed to make in the command line
+all:
+	@for mod in ${SYSTEM_MODULES}; do make -C system/$$mod; done
+	@echo
+	@make -C primitive
 
-%:
-	@case $@ in \
-		all) \
-			for s in system/*; \
-			do \
-				if [ -d "$$s" ]; \
-				then \
-					{ \
-						echo "Building $$s" && \
-						if [ ! -d "${BUILDROOTDIR}/$$s" ]; then mkdir -p ${BUILDROOTDIR}/$$s; fi &&\
-						if [ ! -d "${BINDIR}" ]; then mkdir -p ${BINDIR}; fi && \
-						if [ ! -d "${SYSLIBDIR}" ]; then mkdir -p ${SYSLIBDIR}; fi && \
-						${MAKE} -C $$s -f ../../$${s##*/}.build.mk all; \
-					} || { echo "Building $$s failed" ; exit 1; };\
-				fi; \
-			done; \
-			for p in primitive/*;\
-			do \
-				if [ -d "$$p" ]; \
-				then \
-					{ \
-						${MAKE} -f primitive.mk $${p##*/}; \
-					} || { exit 1; }\
-				fi; \
-			done; \
-			for c in composite/*; \
-			do \
-				if [ -d "$$c" ]; \
-				then \
-					{ \
-						${MAKE} -f composite.mk $${c##*/}; \
-					} || { exit 1; }\
-				fi; \
-			done;; \
-		executables) \
-			for s in system/*; \
-			do \
-				if [ -d "$$s" ]; \
-				then \
-					{ \
-						echo "Building $$s" && \
-						if [ ! -d "${BUILDROOTDIR}/$$s" ]; then mkdir -p ${BUILDROOTDIR}/$$s; fi && \
-						if [ ! -d "${BINDIR}" ]; then mkdir -p ${BINDIR}; fi && \
-						if [ ! -d "${SYSLIBDIR}" ]; then mkdir -p ${SYSLIBDIR}; fi && \
-						${MAKE} -C $$s -f ../../$${s##*/}.build.mk all; \
-					} || { echo "Building $$s failed" ; exit 1; };\
-				fi; \
-			done;; \
-		primitives) \
-			for p in primitive/*; \
-			do \
-				if [ -d "$$p" ]; \
-				then \
-					{ \
-						${MAKE} -f primitive.mk $${p##*/}; \
-					} || { exit 1; }\
-				fi; \
-			done;; \
-		composites) \
-			for c in composite/*; \
-			do \
-				if [ -d "$$c" ]; \
-				then \
-					{ \
-						${MAKE} -f composite.mk $${p##*/}; \
-					} || { exit 1; }\
-				fi; \
-			done;; \
-		sdfsrc|sdfasm|sdfrun|common) \
-			{ \
-				echo "Building $@" && \
-				if [ ! -d "${BUILDROOTDIR}/system/$@" ]; then mkdir -p ${BUILDROOTDIR}/system/$@; fi && \
-				if [ ! -d "${BINDIR}" ]; then mkdir -p ${BINDIR}; fi && \
-				if [ ! -d "${SYSLIBDIR}" ]; then mkdir -p ${SYSLIBDIR}; fi && \
-				${MAKE} -C system/$@ -f ../../$@.build.mk all; \
-			} || { echo "Building $@ failed" ; exit 1; } ;;\
-		clean) \
-			for s in system/*; \
-			do \
-				rm -f ${BUILDROOTDIR}/$$s/*; \
-			done; \
-			${RM} ${BINDIR}/*; \
-			${RM} ${SYSLIBDIR}/*; \
-			for c in composite/*; \
-			do \
-				if [ -d "$$c" ]; \
-				then \
-					${RM} ${BUILDROOTDIR}/actor/$${c##*/}/*; \
-				fi; \
-			done; \
-			for p in primitive/*; \
-			do \
-				if [ -d "$$p" ]; \
-				then \
-					${RM} ${BUILDROOTDIR}/actor/$${p##*/}/*; \
-				fi; \
-			done; \
-			${RM} ${ACTORDIR}/*; \
-			${RM} ${CONTEXTDIR}/*;; \
-		clean_primitives) \
-			for p in primitive/*; \
-			do \
-				if [ -d "$$p" ]; \
-				then \
-					${RM} ${BUILDROOTDIR}/actor/$${p##*/}/*; \
-					${RM} ${ACTORDIR}/$${p##*/}.sdf.so; \
-					${RM} ${CONTEXTDIR}/$${p##*/}.sdf.ctx; \
-				fi; \
-			done;; \
-		clean_composites) \
-			for c in composite/*; \
-			do \
-				if [ -d "$$c" ]; \
-				then \
-					${RM} ${BUILDROOTDIR}/actor/$${c##*/}/*; \
-					${RM} ${ACTORDIR}/$${c##*/}.sdf.bin; \
-					${RM} ${CONTEXTDIR}/$${c##*/}.sdf.ctx; \
-				fi; \
-			done;; \
-		*) \
-			if [ -d primitive/$@ ]; \
-			then \
-				{ ${MAKE} -f primitive.mk $@ ; } || { exit 1; }; \
-			else \
-				if [ -d composite/$@ ]; \
-				then \
-					{ ${MAKE} -f composite.mk $@ ; } || { exit 1; }; \
-				else \
-					{ echo "Component $@ do not exist"; exit 1; }; \
-				fi; \
-			fi;; \
-	esac
+clean:
+	@for mod in ${SYSTEM_MODULES}; do make -C system/$$mod clean; done
+	@make -C primitive clean
+	@make -C composite clean
 
+install:
+	mkdir -p $(BIN_DIR)
+	@for mod in ${SYSTEM_MODULES}; do make -C system/$$mod install; done
 
+	mkdir -p $(ACTOR_DIR)
+	mkdir -p $(CONTEXT_DIR)
+	@make -C primitive install
+	@make -C composite install
 
+uninstall:
+	@for mod in ${SYSTEM_MODULES}; do make -C system/$$mod uninstall; done
+	rmdir $(BIN_DIR) || true
+
+	@make -C primitive uninstall
+	@make -C composite uninstall
+	rmdir -p $(ACTOR_DIR) $(CONTEXT_DIR) || true
+
+distclean:
+	make clean
+	make uninstall
