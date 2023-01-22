@@ -1,7 +1,7 @@
 #*******************************************************************************
-#* 							Makefile for sdrflow primitives
+#* 							Makefile for sdrflow
 #* *****************************************************************************
-#* 	Filename:		primitive.build.mk
+#* 	Filename:		makefile
 #* 	Platform:		ubuntu 16.04 64 bit
 #* 	Author:			Copyright (C) Selmeczi János, original version
 #*******************************************************************************
@@ -30,42 +30,24 @@
 #*
 #******************************************************************************/
 
+DIRECTORIES = A4 FreqResp M1 M2 Mixer OverlapSave CwTx
+# Second step because of dependencies
+DIRECTORIES += Filter CwRx
+# Third step because of dependencies
+DIRECTORIES += Channel Demo
 
-CP=cp
-RM=rm -f
-AR=ar
-LINK=gcc
-ifdef _BENCHMARK_
-MAKE=make _BENCHMARK_=1
-CC=gcc -D_BENCHMARK_
-else
-MAKE=make
-CC=gcc
-endif
+all:
 
-BUILDROOT=../../build
-ACTORDIR=../../actor
-INCLUDEDIR=../../include
-CONTEXTDIR=../../context
+clean:
+	for subdir in $(DIRECTORIES); do rm -f $$subdir/$$subdir.sdf.ctx $$subdir/$$subdir.sdf.asm $$subdir/$$subdir.sdf.bin; done
 
-CFLAGS=-c -Wall -Ofast -funroll-all-loops -fPIC -march=native -DSDF_PLATFORM=0
-LIBFLAGS=rcs
-LINKFLAGS=-Wall -shared
-LIBFLAGS=-lm -lpulse -lpulse-simple -lfftw3
+install:
+	for subdir in $(DIRECTORIES); do \
+	    ../$(BIN_DIR)/sdfsrc -C ../$(CONTEXT_DIR)/ -i $${subdir}/$${subdir} || exit; \
+	    cp -p $$subdir/$$subdir.sdf.ctx ../$(CONTEXT_DIR); \
+	    ../$(BIN_DIR)/sdfasm -i $${subdir}/$${subdir} || exit; \
+	    cp -p $$subdir/$$subdir.sdf.bin ../$(ACTOR_DIR); \
+	done
 
-
-%.actor: $(ACTORDIR)/%.sdf.so
-
-%.context: $(CONTEXTDIR)/%.sdf.ctx
-
-$(ACTORDIR)/%.sdf.so: %.c %.h ${INCLUDEDIR}/primitive_interface.h
-	@${RM} ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/*
-	@${CC} ${CFLAGS} -o ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/$(basename $(basename $(notdir $@))).o $<
-	@${LINK} ${LINKFLAGS} -o $@ ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/$(basename $(basename $(notdir $@))).o ${LIBFLAGS}
-	@${CP} ../../primitive/$(basename $(basename $(notdir $@)))/$(basename $(basename $(notdir $@))).sdf.ctx ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))
-	@${CP} ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/$(basename $(basename $(notdir $@))).sdf.ctx ${CONTEXTDIR}
-
-${CONTEXTDIR}/%.sdf.ctx:
-	@${CP} ${BUILDROOT}/actor/$(basename $(basename $(notdir $@)))/$(basename $(basename $(notdir $@))).sdf.ctx ${CONTEXTDIR}
-
-
+uninstall:
+	@for subdir in $(DIRECTORIES); do rm -f ../$(CONTEXT_DIR)/$$subdir.sdf.ctx ../$(ACTOR_DIR)/$$subdir.sdf.bin; done
