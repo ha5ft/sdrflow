@@ -3,9 +3,9 @@
 ***
 ## Getting started with sdrflow
 ### Platform requirements
-You should have an ***64 bit Linux system*** to try the sdrflow framework. I used the ***ubuntu 16.04.4*** system for the development and the framework has been tested on ***ubuntu 18.04*** too.  A friend of mine has compiled the framework on 64 bit Linux on ARM processor.
+You should have an ***64 bit Linux system*** to try the sdrflow framework. I used the ***Ubuntu 16.04.4*** system for the development and the framework has been tested on ***Ubuntu 18.04*** too.  A friend of mine has compiled the framework on 64 bit Linux on ARM processor.
 ### Install prerequisites
-You should have some packeges installed on your system. On ubuntu or debian systems you could installed them using the folowing command:
+You should have some packeges installed on your system. On Ubuntu or Debian systems you could install them using the folowing command:
 
 ```bash
 > sudo  apt-get install git make gcc libpulse-dev libfftw3-dev
@@ -13,7 +13,7 @@ You should have some packeges installed on your system. On ubuntu or debian syst
 
 ### Get the framework source
 
-You could download the softwate using git.
+You could download the software using git.
 
 ```bash
 # create a working directory
@@ -23,11 +23,11 @@ You could download the softwate using git.
 # clone the sdrflow repository from github
 > git clone https://github.com/ha5ft/sdrflow
 ```
-you will get the framework in the ***sdrflow*** directory in your working directory.
+you will get the framework in the ***sdrflow*** directory under your working directory.
 
 ### Compile the framework
 
-Before you could start experimenting with the framewor you should compile it. The framework comes with a ***build system*** based on ***make***. The build system will build the framework's executabels and all the primitives and composites which come with the framework. To build the framework you should do the following:
+Before you could start experimenting with the framework you should compile it. The framework comes with a ***build system*** based on ***make***. The build system will build the framework's executables and all the primitives and composites which come with the framework. To build the framework you should do the following:
 
 ```bash
 # go to the sdrflow directory
@@ -35,9 +35,13 @@ Before you could start experimenting with the framewor you should compile it. Th
 # build the framework
 > make all
 ```
-After that you could check the sdrflow directory. Several new directory have been created.
+After that you could check the sdrflow directory. Several new directories have been created.
 - In the ***sdrflow/bin*** directory you will find the executables of the framework.
-- In the ***sdrfow/actor*** directory you will finde the binary codes for primitives and composites.
-- In the ***sdrflow/context*** directory you will finde the interface declaration files of the primitives and composites.
+- In the ***sdrfow/actor*** directory you will find the binary codes for primitives and composites.
+- In the ***sdrflow/context*** directory you will find the interface declaration files of the primitives and composites.
 
-Now you are ready to thest the built in data flows and start to roll out your own ones.
+Now you are ready to test the built-in data flows and start to roll out your own ones.
+
+----
+
+Next: [Trying the Demo dataflow](try_demo_app.md)
